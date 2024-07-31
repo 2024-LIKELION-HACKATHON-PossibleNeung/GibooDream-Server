@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 
 from django.conf import settings
 
-
 class Goods(models.Model) :
     CATEGORY =[ ( "식료품", (
         ('rice','쌀'), 
@@ -34,6 +33,7 @@ class Goods(models.Model) :
     goods_price = models.IntegerField(verbose_name="물품 가격",null=False)
     goods_name = models.CharField(verbose_name="물품 이름",max_length=40,null=False)
     goods_num = models.IntegerField(verbose_name="물품 재고",null=False)
+
     goods_category = models.CharField(choices=CATEGORY)
     item_url=models.CharField(verbose_name="물품 이름",max_length=40,null=False)
     item_img=models.ImageField(upload_to='images/', blank=False)
@@ -85,6 +85,7 @@ class Donation_Item(models.Model) :
     goods_id = models.ForeignKey(Goods, on_delete=models.CASCADE)
     basket_dream = models.ForeignKey(Basket_dream, on_delete=models.CASCADE,null=False)
     donation_id = models.ForeignKey(CopyOfDonation,  on_delete=models.CASCADE)
+
     quantity = models.IntegerField(verbose_name="물품 수량")
 
 
@@ -100,6 +101,7 @@ class Cheering(models.Model):
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="회원 아이디", null=False, on_delete=models.CASCADE)
     basket_heart = models.ForeignKey(Basket_heart,verbose_name="따숨바구니 고유번호", null=True, on_delete=models.CASCADE)
     basket_dream = models.ForeignKey(Basket_dream,verbose_name="꿈바구니 고유번호", null=True, on_delete=models.CASCADE)
+
     cheering_cont = models.CharField(verbose_name = "응원 문구", max_length= 30)
 
 class Beneficiary(models.Model):
