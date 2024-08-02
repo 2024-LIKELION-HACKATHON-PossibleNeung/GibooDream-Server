@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin #추가
 from django.db import models
 
 class MyUserManager(BaseUserManager):
@@ -30,7 +30,7 @@ class MyUserManager(BaseUserManager):
         return self.create_user(email, nickname, 'individual', password, **extra_fields)
 
 #사용자 모델 정의 
-class MyUser(AbstractBaseUser):
+class MyUser(AbstractBaseUser, PermissionsMixin):  #PermissionsMixin 추가
     USER_TYPE_CHOICES = (
         ('individual', 'Individual'),
         ('company', 'Company'),
@@ -49,6 +49,9 @@ class MyUser(AbstractBaseUser):
     terms3= models.BooleanField(default=False)
     terms4 = models.BooleanField(default=False, blank=True)
     terms5 = models.BooleanField(default=False, blank=True)
+
+    donate_total = models.IntegerField(default=0, verbose_name="총 기부 금액") #추가
+
 
     objects = MyUserManager()
 
