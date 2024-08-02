@@ -6,9 +6,9 @@ class GoodsAdmin(admin.ModelAdmin):
 
 admin.site.register(Goods, GoodsAdmin)
 
-admin.site.register(Basket)
-admin.site.register(Basket_Item)
-admin.site.register(Donation)
+admin.site.register(Basket_dream)
+admin.site.register(Basket_Item_dream)
+admin.site.register(Donation_List)
 admin.site.register(Donation_Item)
 admin.site.register(Review)
 admin.site.register(Cheering)

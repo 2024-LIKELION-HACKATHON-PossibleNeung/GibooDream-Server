@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "donations",
     "users",
     "rest_framework",
+    "baskets",
 ]
 
 MIDDLEWARE = [
