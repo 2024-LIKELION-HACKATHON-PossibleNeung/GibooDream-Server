@@ -13,31 +13,43 @@ def index(request):
 
 class ApplyBasket(APIView):
   def post(self, request, format=None):
-    serializer_data = {
-      'benefit_name': request.data.get('userName'),
-      'buy_num': request.data.get('totalNum'),
-      'buy_reason': request.data.get('buy_reason'),
-      'basket_apply':124,
-      'basket_items': request.data.get('items')
-    }
-    if(serializer.is_valid()):
-      if (request.data.get('basketType')=="dream") :
-        serializer = DreamBasketSerializer(data=serializer_data)
+    user = request.user
+    if (request.data.get('basket_type')=="dream"):
+      serializer_data = {
+      'user_id': user.email,
+      'dbuy_num': request.data.get('totalNum'),
+      'dbuy_reason': request.data.get('content'),
+      'basket_dream': request.data.get('basket_dream')}
+      serializer = DreamBasketSerializer(data=serializer_data)
+      if serializer.is_valid():
         serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
       else:
-        serializer = HeartBasketSerializer(data=serializer_data)
-        serializer.save()
-      return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
   
-  def delete(self, request):
-    basketItem = Basket_Item_dream.objects.get(basket_item_id=request.basket_item_id)
-    basketItem.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    elif (request.data.get('basket_type')=="heart"):
+      serializer_data = {
+      'user_id': user.email,
+      'hbuy_num': request.data.get('totalNum'),
+      'hbuy_reason': request.data.get('content')}
+      serializer = HeartBasketSerializer(data=serializer_data)
+      if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+      else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  
+  # def delete(self, request):
+  #   basketItem = Basket_Item_dream.objects.get(basket_item_id=request.basket_item_id)
+  #   basketItem.delete()
+  #   return Response(status=status.HTTP_204_NO_CONTENT)
   
   def put(self, request):
-    basketItem = Basket_Item_dream.objects.get(basket_item_id=request.basket_item_id)
-    Item = Basket_Item_dream.objects.get(goods_id=request.basket_item_id)
+    user = request.user
+    basket_type = request.data.get("basket_type")
+    if(basket_type=="dream"):
+      basketItem = Basket_Item_dream.objects.get(basket_item_id=request.basket_item_id)
+      Item = Basket_Item_dream.objects.get(goods_id=request.basket_item_id)
     if(request.data.cal=="add"):
       serializer_data = {
         'basket_dream': basketItem.basket_dream,
@@ -54,7 +66,7 @@ class ApplyBasket(APIView):
         'basket_buy_num': basketItem.basket_buy_num - 1,
         'total_price': basketItem.total_price - Item.goods_price
       }
-      
+
     serializer = BasketItemSerializer(serializer_data)
     serializer.save()
     return Response(serializer.data)
