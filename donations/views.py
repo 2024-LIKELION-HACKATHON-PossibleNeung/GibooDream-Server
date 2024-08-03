@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render,  redirect
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -6,8 +6,8 @@ from .models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
-from django.db import transaction
-
+from rest_framework.parsers import MultiPartParser, FormParser
+from .forms import ReviewForm
 
 
 class CheeringView(APIView):
@@ -94,6 +94,7 @@ class DonationView(APIView):
 
 class ReviewView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
         serializer = ReviewSerializer(data=request.data, context={'request': request})
@@ -109,3 +110,29 @@ class ReviewView(APIView):
             }
             return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+def review_create_view(request):
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, request.FILES)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user_id = request.user  # 현재 로그인한 사용자 설정
+            donation = form.cleaned_data['donation_id']
+            
+            # 수혜자를 basket_dream 또는 basket_heart를 통해 확인
+            if donation.basket_dream and donation.basket_dream.user_id != request.user:
+                form.add_error('donation_id', "You can only review donations you have received.")
+            elif donation.basket_heart and donation.basket_heart.user_id != request.user:
+                form.add_error('donation_id', "You can only review donations you have received.")
+            else:
+                review.donation_id = donation  # 여기를 수정합니다.
+                review.save()
+                return redirect('review-success')  # 성공 후 리디렉션할 URL 설정
+
+    else:
+        form = ReviewForm()
+    
+    return render(request, 'review_form.html', {'form': form})
+
+def review_success_view(request):
+    return render(request, 'review_success.html')
