@@ -123,7 +123,6 @@ class UserDonationSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     user_nickname = serializers.CharField(source='user_id.nickname', read_only=True)
-    donation_id = serializers.IntegerField(write_only=True)
     created_at = serializers.SerializerMethodField()
 
     class Meta:
@@ -138,12 +137,10 @@ class ReviewSerializer(serializers.ModelSerializer):
         donation_id = validated_data.pop('donation_id')
         donation = CopyOfDonation.objects.get(id=donation_id)
 
-        # 수혜자를 basket_dream 또는 basket_heart를 통해 확인
         if donation.basket_dream and donation.basket_dream.user_id != user:
             raise serializers.ValidationError("You can only review donations you have received.")
         if donation.basket_heart and donation.basket_heart.user_id != user:
             raise serializers.ValidationError("You can only review donations you have received.")
 
-        review = Review.objects.create(user_id=user, donation_id=donation, **validated_data)
+        review = Review.objects.create(user_id=user, donation_id=donation, **validated_data)  # CopyOfDonation 객체를 직접 할당합니다.
         return review
-
