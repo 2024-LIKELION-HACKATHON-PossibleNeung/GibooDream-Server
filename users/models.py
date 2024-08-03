@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin #추가
 from django.db import models
+from django.core.exceptions import ValidationError
 
 class MyUserManager(BaseUserManager):
     # 유저(인스턴스) 생성
@@ -10,13 +11,19 @@ class MyUserManager(BaseUserManager):
             raise ValueError('The Nickname field must be set')
         if not password:
             raise ValueError('The Password field must be set')
-        if 'terms1' not in extra_fields or not extra_fields['terms1']:
+#        if 'terms1' not in extra_fields or not extra_fields['terms1']:
             raise ValueError('Terms 1 must be accepted')
-        if 'terms2' not in extra_fields or not extra_fields['terms2']:
+#        if 'terms2' not in extra_fields or not extra_fields['terms2']:
             raise ValueError('Terms 2 must be accepted')
-        if 'terms3' not in extra_fields or not extra_fields['terms3']:
+#        if 'terms3' not in extra_fields or not extra_fields['terms3']:
             raise ValueError('Terms 3 must be accepted')
-        
+#        if not extra_fields.get('terms1'):
+            raise ValueError('Terms 1 must be accepted')
+#        if not extra_fields.get('terms2'):
+            raise ValueError('Terms 2 must be accepted')
+#        if not extra_fields.get('terms3'):
+            raise ValueError('Terms 3 must be accepted')
+
         email = self.normalize_email(email)
         user = self.model(email=email, nickname=nickname, user_type=user_type, **extra_fields)
         user.set_password(password)
@@ -52,11 +59,18 @@ class MyUser(AbstractBaseUser, PermissionsMixin):  #PermissionsMixin 추가
 
     donate_total = models.IntegerField(default=0, verbose_name="총 기부 금액") #추가
 
-
     objects = MyUserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['nickname', 'user_type']
+
+    def clean(self):
+        if not self.terms1:
+            raise ValidationError('Terms 1 must be accepted')
+        if not self.terms2:
+            raise ValidationError('Terms 2 must be accepted')
+        if not self.terms3:
+            raise ValidationError('Terms 3 must be accepted')
 
     def __str__(self):
         return self.email
