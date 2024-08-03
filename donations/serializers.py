@@ -64,13 +64,13 @@ class CopyOfDonationSerializer(serializers.ModelSerializer):
             price = goods.goods_price * quantity
             
             Donation_Item.objects.create(donation_id=donation, goods_id=goods, basket_item_dream=basket_item, quantity=quantity)
-            goods.goods_num -= quantity
-            goods.save()
+            # goods.goods_num -= quantity
+            # goods.save()
             
-            basket_item.buy_num -= quantity
-            if basket_item.buy_num == 0:
-                basket_item.complete = True
-            basket_item.save()
+            # basket_item.buy_num -= quantity
+            # if basket_item.buy_num == 0:
+            #     basket_item.complete = True
+            # basket_item.save()
             
             goods_total_price += price
 
