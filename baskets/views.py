@@ -6,6 +6,8 @@ from donations.models import *
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django.shortcuts import get_list_or_404
 # Create your views here.
 
 class ApplyBasket(APIView):
@@ -87,10 +89,10 @@ class BasketDream(APIView):
       return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
   
-  def delete(self, request):
-    basket = Basket_dream.objects.get(basket_id=request.basket_id)
-    basket.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)      
+  # def delete(self, request):
+  #   basket = Basket_dream.objects.get(basket_id=request.basket_id)
+  #   basket.delete()
+  #   return Response(status=status.HTTP_204_NO_CONTENT)      
 
 class BasketHeart(APIView): 
   def get(self, request):
@@ -113,8 +115,9 @@ class BasketHeart(APIView):
 
 
 class BasketList(APIView):
-  def get(self,request):
-    if(request.data.get('basketType')=="dream"):
+  def get(self, request, format=None):
+    basket_type=request.query_params.get('basket_type')
+    if(basket_type=="dream"):
       baskets = Basket_dream.objects.all()
       serializer = DreamBasketSerializer(baskets, many=True)
     else:
@@ -123,9 +126,31 @@ class BasketList(APIView):
 
     return Response(serializer.data)
     
+class BasketDetail(APIView):
+  def get(self, request, basket_id, format=None):
+    basket_type = request.query_params.get('basket_type')
+    if basket_type == "dream":
+            basket = get_object_or_404(Basket_dream, basket_dream=basket_id)
+            serializer = DreamBasketSerializer(basket)
+    else:
+      basket = get_object_or_404(Basket_heart, basket_heart=basket_id)
+      serializer = HeartBasketSerializer(basket)
+    return Response(serializer.data)
 
+class MyBasketStatus(APIView):
+  def get(self, request, format=None):
+    user = request.user
+    user_id=user.email
+    dream_basket = get_list_or_404(Basket_dream, user_id=user_id)
+    heart_basket=get_list_or_404(Basket_heart, user_id=user_id)
+    dbasket_serializer = DreamBasketStatusSerializer(dream_basket, many=True)
+    hbasket_serializer = HeartBasketStatusSerializer(heart_basket, many=True)
+    combined_data = {
+            'basket': dbasket_serializer.data,
+            'beneficiary': hbasket_serializer.data
+        }
+    return Response(combined_data)
 
-  
   
 
 
