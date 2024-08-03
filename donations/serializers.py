@@ -3,7 +3,6 @@ from .models import *
 from users.models import *
 import datetime
 
-
 User = get_user_model()
 
 class BasketItemDreamSerializer(serializers.ModelSerializer):
@@ -144,3 +143,4 @@ class ReviewSerializer(serializers.ModelSerializer):
 
         review = Review.objects.create(user_id=user, donation_id=donation, **validated_data)  # CopyOfDonation 객체를 직접 할당합니다.
         return review
+    

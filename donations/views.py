@@ -8,6 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser
 from .forms import ReviewForm
+from rest_framework.decorators import api_view, permission_classes
+
 
 
 class CheeringView(APIView):
@@ -29,9 +31,9 @@ class CheeringView(APIView):
                 else:
                     raise Http404("Invalid basket type")
             except Basket_dream.DoesNotExist:
-                pass
+                raise Http404("바구니 아이디가 적절하지 않아요")
             except Basket_heart.DoesNotExist:
-                raise Http404("Basket not found")
+                raise Http404("바구니 아이디가 적절하지 않아요")
         
         # basket_id를 기반으로 객체를 가져온다
         basket = None
@@ -40,7 +42,7 @@ class CheeringView(APIView):
         elif basket_dream_id:
             basket = get_basket(basket_dream_id, 'dream')
         else:
-            return Response({"error": "Either 'basket_heart' or 'basket_dream' must be provided."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "따숨바구니, 꿈바구니 중 하나를 알려주세요"}, status=status.HTTP_400_BAD_REQUEST)
 
         # 시리얼라이저에 사용자와 바구니 정보를 포함한 데이터를 설정합니다
         serializer_data = {
@@ -136,3 +138,4 @@ def review_create_view(request):
 
 def review_success_view(request):
     return render(request, 'review_success.html')
+
