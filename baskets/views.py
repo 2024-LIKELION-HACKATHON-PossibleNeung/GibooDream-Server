@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.shortcuts import get_list_or_404
 # Create your views here.
 
 class ApplyBasket(APIView):
@@ -136,7 +137,20 @@ class BasketDetail(APIView):
       serializer = HeartBasketSerializer(basket)
     return Response(serializer.data)
 
-  
+class MyBasketStatus(APIView):
+  def get(self, request, format=None):
+    user = request.user
+    user_id=user.email
+    dream_basket = get_list_or_404(Basket_dream, user_id=user_id)
+    heart_basket=get_list_or_404(Basket_heart, user_id=user_id)
+    dbasket_serializer = DreamBasketStatusSerializer(dream_basket, many=True)
+    hbasket_serializer = HeartBasketStatusSerializer(heart_basket, many=True)
+    combined_data = {
+            'basket': dbasket_serializer.data,
+            'beneficiary': hbasket_serializer.data
+        }
+    return Response(combined_data)
+
   
 
 
