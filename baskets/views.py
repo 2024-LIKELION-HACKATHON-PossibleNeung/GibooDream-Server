@@ -8,9 +8,6 @@ from rest_framework import status
 from django.http import Http404
 # Create your views here.
 
-def index(request):
-  return HttpResponse("Hi")
-
 class ApplyBasket(APIView):
   def post(self, request, format=None):
     user = request.user
@@ -48,28 +45,31 @@ class ApplyBasket(APIView):
     user = request.user
     basket_type = request.data.get("basket_type")
     if(basket_type=="dream"):
-      basketItem = Basket_Item_dream.objects.get(basket_item_id=request.basket_item_id)
-      Item = Basket_Item_dream.objects.get(goods_id=request.basket_item_id)
-    if(request.data.cal=="add"):
       serializer_data = {
-        'basket_dream': basketItem.basket_dream,
-        'basket_heart': basketItem.basket_heart,
-        'basket_goods_id': basketItem.basket_goods_id,
-        'basket_buy_num': basketItem.basket_buy_num + 1,
-        'total_price': basketItem.total_price + Item.goods_price
-      }
-    else:
-      serializer_data = {
-        'basket_dream': basketItem.basket_dream,
-        'basket_heart': basketItem.basket_heart,
-        'basket_goods_id': basketItem.basket_goods_id,
-        'basket_buy_num': basketItem.basket_buy_num - 1,
-        'total_price': basketItem.total_price - Item.goods_price
-      }
+      'user_id': user.email,
+      'dbuy_num': request.data.get('totalNum'),
+      'dbuy_reason': request.data.get('content'),
+      'basket_dream': request.data.get('basket_dream')}
+      basket = Basket_dream.objects.get(basket_dream=request.data.get('basket_dream'))
+      serializer = DreamBasketSerializer(basket, data=serializer_data)
+      if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+      else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    serializer = BasketItemSerializer(serializer_data)
-    serializer.save()
-    return Response(serializer.data)
+    elif (request.data.get('basket_type')=="heart"):
+        serializer_data = {
+        'user_id': user.email,
+        'hbuy_num': request.data.get('totalNum'),
+        'hbuy_reason': request.data.get('content')}
+        basket = Basket_heart.objects.get(basket_heart=request.data.get('basket_heart'))
+        serializer = HeartBasketSerializer(basket, data=serializer_data)
+        if serializer.is_valid():
+          serializer.save()
+          return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+          return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
   
 
