@@ -17,12 +17,27 @@ class ApplyBasket(APIView):
   def post(self, request, format=None):
     user = request.user
     if (request.data.get('basket_type')=="dream"):
-      serializer_data = {
+      serializer_basket_data = {
       'user_id': user.email,
       'dbuy_num': request.data.get('totalNum'),
       'dbuy_reason': request.data.get('content'),
       'basket_dream': request.data.get('basket_dream')}
-      serializer = DreamBasketSerializer(data=serializer_data)
+      serializer = DreamBasketSerializer(data=serializer_basket_data)
+      item_list = request.data.get('items')
+      for item in item_list:
+        serializer_item_data = {
+          'basket_dream': request.data.get('basket_dream'),
+          'goods_price': item['price'],
+          'goods_name': item['pName'],
+          'item_url': item['item_url'],
+          'buy_num': item['amount'],
+          'total_price': item['price'] * item['amount'],
+          'complete': False,
+        }
+        serializer_item = BasketItemSerializer(serializer_item_data)
+        if serializer_item.is_valid():
+          serializer_item.save()
+
       if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -30,10 +45,25 @@ class ApplyBasket(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
   
     elif (request.data.get('basket_type')=="heart"):
+      item_list = request.data.get('items')
+      for item in item_list:
+        serializer_item_data = {
+          'basket_heart': request.data.get('basket_dream'),
+          'goods_price': item['price'],
+          'goods_name': item['pName'],
+          'item_url': item['item_url'],
+          'buy_num': item['amount'],
+          'total_price': item['price'] * item['amount'],
+          'complete': False,
+        }
+        serializer_item = BasketItemSerializer(serializer_item_data)
+        if serializer_item.is_valid():
+          serializer_item.save()
       serializer_data = {
       'user_id': user.email,
       'hbuy_num': request.data.get('totalNum'),
-      'hbuy_reason': request.data.get('content')}
+      'hbuy_reason': request.data.get('content'),
+      'basket_heart': request.data.get('basket_heart')}
       serializer = HeartBasketSerializer(data=serializer_data)
       if serializer.is_valid():
         serializer.save()
