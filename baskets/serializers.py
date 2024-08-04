@@ -47,3 +47,7 @@ class HeartBasketStatusSerializer(serializers.ModelSerializer):
         except Beneficiary.DoesNotExist:
             return None
 
+class GoodsSerializer(serializers.ModelSerializer):
+   class Meta:
+      model = Goods
+      fields = '__all__'

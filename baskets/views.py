@@ -8,6 +8,9 @@ from rest_framework import status
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.shortcuts import get_list_or_404
+from django.http import JsonResponse
+from .crawler import crawl_items
+from django.core import serializers
 # Create your views here.
 
 class ApplyBasket(APIView):
@@ -151,7 +154,31 @@ class MyBasketStatus(APIView):
         }
     return Response(combined_data)
 
-  
+class Crawl_items(APIView):
+  def get(self, request, format=None):
+    category=request.query_params.get('category')
+    items_list=crawl_items(category)
+    # serializer_data = {
+    #   'goods_id': 124546,
+    #   'goods_name': items_list[0]['name'].strip(),
+    #   'goods_price': int(items_list[0]['price'].replace(',','')),
+    #   'goods_num':1,
+    #   'item_url': "sdga",
+    #   'item_img': "dag",
+    #   'goods_category': "tissue",
+    #   }
+    # serializer_data2 = {'goods_id': 124546,
+    #   'goods_name': items_list[1]['name'].strip(),
+    #   'goods_price': int(items_list[1]['price'].replace(',','')),
+    #   'goods_num':1,
+    #   'item_url': "sdga",
+    #   'item_img': "dag",
+    #   'goods_category': "tissue",}
+    serializer_data = items_list
+    item_data=GoodsSerializer(serializer_data, many=True)
+    return Response({'status': 'success', 'data': item_data.data })
+
+
 
 
 
