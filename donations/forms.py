@@ -1,5 +1,5 @@
 from django import forms
-from .models import Basket_Item_dream
+from .models import *
 
 class BasketItemDreamForm(forms.ModelForm):
     class Meta:
@@ -11,3 +11,10 @@ class BasketItemDreamForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['basket_dream'].required = False
         self.fields['basket_heart'].required = False
+
+class ReviewForm(forms.ModelForm):
+    donation_id = forms.ModelChoiceField(queryset=CopyOfDonation.objects.all(), label='Donation ID')
+
+    class Meta:
+        model = Review
+        fields = ['donation_id', 'review_cont', 'review_img']
