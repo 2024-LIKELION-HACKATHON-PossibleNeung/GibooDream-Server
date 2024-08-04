@@ -58,7 +58,9 @@ class Donation_List(models.Model):
 
 class Donation_Item(models.Model) :
     donation_id = models.ForeignKey(CopyOfDonation,  on_delete=models.CASCADE)
-    goods_id = models.ForeignKey(Goods, on_delete=models.CASCADE)
+    goods_name = models.CharField(verbose_name="상품명", max_length=50)
+    goods_price = models.IntegerField(verbose_name="물품 가격")
+    item_url = models.CharField(verbose_name="상품 url", max_length=300)
     basket_item_dream = models.ForeignKey(Basket_Item_dream, on_delete=models.CASCADE)
     quantity = models.IntegerField(verbose_name="물품 수량")
 
