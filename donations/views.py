@@ -25,9 +25,9 @@ class CheeringView(APIView):
         def get_basket(basket_id, basket_type):
             try:
                 if basket_type == 'dream':
-                    return Basket_dream.objects.get(id=basket_id)
+                    return Basket_dream.objects.get(basket_dream=basket_id)
                 elif basket_type == 'heart':
-                    return Basket_heart.objects.get(id=basket_id)
+                    return Basket_heart.objects.get(basket_heart=basket_id)
                 else:
                     raise Http404("Invalid basket type")
             except Basket_dream.DoesNotExist:
