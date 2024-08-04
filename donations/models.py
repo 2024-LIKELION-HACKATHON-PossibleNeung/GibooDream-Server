@@ -41,8 +41,7 @@ class Goods(models.Model) :
     goods_num = models.IntegerField(verbose_name="물품 재고",null=False)
     goods_category = models.CharField(choices=get_category_choices(CATEGORY), max_length=300)
     item_url=models.CharField(verbose_name="물품 이름",max_length=40,null=False)
-
-    item_img=models.ImageField(upload_to='images/', blank=False)
+    item_img=models.CharField(verbose_name="물품 이미지주소",max_length=40,null=False)
    
 class Basket_dream(models.Model):
     basket_dream = models.IntegerField(verbose_name="꿈바구니 아이디",null=False)
