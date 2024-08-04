@@ -1,8 +1,12 @@
-from django.urls import path, include
-from . import views
-from rest_framework import urls
+# urls.py
+from django.urls import path
+from .views import UserCreate, login, BeneficiaryApplicationCreate, ReviewApplications, ApproveApplication, RejectApplication
 
-urlpatterns =[
-    path('signup/', views.UserCreate.as_view()),
-    path('api-auth/', include('rest_framework.urls')),
- ]
+urlpatterns = [
+    path('signup/', UserCreate.as_view(), name='signup'),
+    path('login/', login, name='login'),
+    path('beneficiaries/<str:email>/', BeneficiaryApplicationCreate.as_view(), name='beneficiary_application'),
+    path('applications/review/', ReviewApplications.as_view(), name='review_applications'),
+    path('applications/approve/<int:application_id>/', ApproveApplication.as_view(), name='approve_application'),
+    path('applications/reject/<int:application_id>/', RejectApplication.as_view(), name='reject_application'),
+]
