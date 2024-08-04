@@ -4,7 +4,7 @@ from .models import *
 class BasketItemDreamForm(forms.ModelForm):
     class Meta:
         model = Basket_Item_dream
-        fields = ['basket_dream', 'basket_heart', 'goods_id', 'buy_num', 'total_price', 'complete']
+        fields = ['basket_dream', 'basket_heart', 'buy_num', 'total_price', 'complete']
         
 
     def __init__(self, *args, **kwargs):

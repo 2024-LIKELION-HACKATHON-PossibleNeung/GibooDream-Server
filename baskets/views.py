@@ -34,9 +34,11 @@ class ApplyBasket(APIView):
           'total_price': item['price'] * item['amount'],
           'complete': False,
         }
-        serializer_item = BasketItemSerializer(serializer_item_data)
+        serializer_item = BasketItemSerializer(data=serializer_item_data)
         if serializer_item.is_valid():
           serializer_item.save()
+        else:
+          print("error")
 
       if serializer.is_valid():
         serializer.save()
@@ -56,7 +58,7 @@ class ApplyBasket(APIView):
           'total_price': item['price'] * item['amount'],
           'complete': False,
         }
-        serializer_item = BasketItemSerializer(serializer_item_data)
+        serializer_item = BasketItemSerializer(data=serializer_item_data)
         if serializer_item.is_valid():
           serializer_item.save()
       serializer_data = {
