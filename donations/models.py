@@ -39,8 +39,7 @@ class Goods(models.Model) :
     goods_price = models.IntegerField(verbose_name="물품 가격",null=False)
     goods_name = models.CharField(verbose_name="물품 이름",max_length=40,null=False)
     goods_num = models.IntegerField(verbose_name="물품 재고",null=False)
-    goods_category = models.CharField(choices=get_category_choices(CATEGORY), max_length=300)
-    item_url=models.CharField(verbose_name="물품 이름",max_length=40,null=False)
+    item_url=models.CharField(verbose_name="물품 주소",max_length=40,null=False)
     item_img=models.CharField(verbose_name="물품 이미지주소",max_length=40,null=False)
    
 class Basket_dream(models.Model):
@@ -66,7 +65,8 @@ class Basket_heart(models.Model):
 class Basket_Item_dream(models.Model):
     basket_dream = models.ForeignKey(Basket_dream, on_delete=models.CASCADE,null=True) #null 허용해줘야 함
     basket_heart = models.ForeignKey(Basket_heart, on_delete=models.CASCADE,null=True)
-    goods_id = models.ForeignKey(Goods, on_delete=models.CASCADE,null=True)
+    goods_name = models.CharField(verbose_name="상품명", null = False, max_length=50)
+    item_url = models.CharField(verbose_name="상품 url", null = False, max_length = 300)
     buy_num = models.IntegerField(verbose_name="물품 수량",null=False,default=0)
     total_price = models.IntegerField(verbose_name="총 가격",default=0)
     complete=models.BooleanField(default = False)
