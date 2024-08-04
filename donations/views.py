@@ -73,8 +73,8 @@ class DonationView(APIView):
             response_data = {
                 'donation_id': donation.id,
                 'user_id': donation.user_id.email,  # 여기에서 user의 email을 반환
-                'basket_dream': donation.basket_dream.id if donation.basket_dream else None,
-                'basket_heart': donation.basket_heart.id if donation.basket_heart else None,
+                'basket_dream': donation.basket_dream.basket_dream if donation.basket_dream else None,
+                'basket_heart': donation.basket_heart.basket_heart if donation.basket_heart else None,
                 'goods_total_price': donation.goods_total_price,
                 'buy_date': donation.buy_date,
                 'receipt_yn': donation.receipt_yn,
@@ -82,17 +82,17 @@ class DonationView(APIView):
                     {
                         'donation_item_id': item.id,
                         'basket_item_dream': item.basket_item_dream.id,
-                        'goods_id': item.goods_id.id,
-                        'goods_name': item.goods_id.goods_name,
+                        'goods_name': item.goods_name,
                         'quantity': item.quantity,
-                        'price': item.goods_id.goods_price * item.quantity
+                        'price': item.goods_price * item.quantity,
+                        'item_url': item.item_url
                     }
                     for item in donation.donation_item_set.all()
                 ]
             }
             return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
 
 class ReviewView(APIView):
     permission_classes = [IsAuthenticated]

@@ -43,12 +43,8 @@ class CopyOfDonationSerializer(serializers.ModelSerializer):
             except Basket_Item_dream.DoesNotExist:
                 raise serializers.ValidationError(f"Basket item dream with id {item['basket_item_dream']} does not exist.")
             
-            goods = Goods.objects.get(pk=basket_item.goods_id.id)
-            
             if item['quantity'] > basket_item.buy_num:
-                raise serializers.ValidationError(f"Requested quantity for {basket_item.goods_id.goods_name} exceeds the required quantity.")
-            if item['quantity'] > goods.goods_num:
-                raise serializers.ValidationError(f"Requested quantity for {basket_item.goods_id.goods_name} exceeds the available stock.")
+                raise serializers.ValidationError(f"Requested quantity for {basket_item.goods_name} exceeds the required quantity.")
         return data
 
     def create(self, validated_data):
@@ -59,18 +55,17 @@ class CopyOfDonationSerializer(serializers.ModelSerializer):
 
         for item_data in selected_items_data:
             basket_item = Basket_Item_dream.objects.get(pk=item_data['basket_item_dream'])
-            goods = Goods.objects.get(pk=basket_item.goods_id.id)
             quantity = item_data['quantity']
-            price = goods.goods_price * quantity
+            price = basket_item.goods_price * quantity
             
-            Donation_Item.objects.create(donation_id=donation, goods_id=goods, basket_item_dream=basket_item, quantity=quantity)
-            # goods.goods_num -= quantity
-            # goods.save()
-            
-            # basket_item.buy_num -= quantity
-            # if basket_item.buy_num == 0:
-            #     basket_item.complete = True
-            # basket_item.save()
+            Donation_Item.objects.create(
+                donation_id=donation,
+                basket_item_dream=basket_item,
+                quantity=quantity,
+                goods_name=basket_item.goods_name,
+                goods_price=basket_item.goods_price,
+                item_url=basket_item.item_url
+            )
             
             goods_total_price += price
 
@@ -85,10 +80,10 @@ class DonationItemDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Donation_Item
-        fields = ['donation_item_id', 'goods_id', 'basket_item_dream', 'quantity', 'price']
+        fields = ['donation_item_id', 'basket_item_dream', 'goods_name', 'goods_price', 'item_url', 'quantity', 'price']
 
     def get_price(self, obj):
-        return obj.goods_id.goods_price * obj.quantity
+        return obj.goods_price * obj.quantity
     
 class CopyOfDonationDetailSerializer(serializers.ModelSerializer):
     donation_id = serializers.IntegerField(source='id')
