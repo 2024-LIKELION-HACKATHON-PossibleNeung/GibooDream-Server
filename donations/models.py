@@ -11,7 +11,7 @@ class Goods(models.Model) :
     item_img=models.CharField(verbose_name="물품 이미지주소",max_length=40,null=False)
    
 class Basket_dream(models.Model):
-    basket_dream = models.IntegerField(verbose_name="꿈바구니 아이디",null=False)
+    basket_dream = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     dbuy_num = models.IntegerField(verbose_name= "구매갯수", default=0)
     dbuy_reason = models.CharField(max_length=300, verbose_name="구매 이유", null=False,default='')
@@ -21,7 +21,7 @@ class Basket_dream(models.Model):
     dbasket_complete = models.DateField(verbose_name="꿈바구니 완료 날짜",auto_now_add=False,null=True)
 
 class Basket_heart(models.Model):
-    basket_heart=models.IntegerField(verbose_name="따숨바구니 고유번호",null=False,default=0)
+    basket_heart=models.AutoField(primary_key=True)
     user_id=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     hbuy_num=models.IntegerField(verbose_name= "구매갯수", default=0)
     hbuy_reason=models.CharField(max_length=300, verbose_name="구매 이유", null=False,default='')
