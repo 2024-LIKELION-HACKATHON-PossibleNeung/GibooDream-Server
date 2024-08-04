@@ -80,6 +80,8 @@ class CopyOfDonation(models.Model):
     payment = models.CharField(verbose_name="결제방법", max_length=20)
     receipt_yn = models.BooleanField(default=True)
 
+    def __str__(self):
+        return str(self.id)
 
 class Donation_List(models.Model):
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -97,7 +99,8 @@ class Review(models.Model) :
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="회원 아이디", null=True, on_delete=models.CASCADE)
     donation_id = models.ForeignKey(CopyOfDonation, on_delete=models.CASCADE)
     review_cont = models.CharField(verbose_name="후기 내용", max_length=300)
-    review_img = models.ImageField(verbose_name="후기 이미지", default="media/defalut_image.img")
+    review_img = models.ImageField(verbose_name="후기 이미지", upload_to='reviews/')
+
 
 class Cheering(models.Model):
     cheering_id=models.AutoField(verbose_name="응원메세지 고유번호",null=False, primary_key=True)
