@@ -114,6 +114,7 @@ class UserDonationSerializer(serializers.ModelSerializer):
         total = sum(donation.goods_total_price for donation in donations)
         return total
     
+    
 
 class ReviewSerializer(serializers.ModelSerializer):
     user_nickname = serializers.CharField(source='user_id.nickname', read_only=True)
@@ -139,3 +140,10 @@ class ReviewSerializer(serializers.ModelSerializer):
         review = Review.objects.create(user_id=user, donation_id=donation, **validated_data)  # CopyOfDonation 객체를 직접 할당합니다.
         return review
     
+    
+    
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta : 
+        model = MyUser
+        fields = ['email', 'nickname', 'donate_total']

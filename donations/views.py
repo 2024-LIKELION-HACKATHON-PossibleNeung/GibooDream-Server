@@ -8,7 +8,6 @@ from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser
 from .forms import ReviewForm
-from rest_framework.decorators import api_view, permission_classes
 
 
 
@@ -70,6 +69,11 @@ class DonationView(APIView):
         serializer = CopyOfDonationSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             donation = serializer.save()
+
+            user = request.user
+            user.donate_total = self.calculate_donate_total(user)
+            user.save()
+
             response_data = {
                 'donation_id': donation.id,
                 'user_id': donation.user_id.email,  # 여기에서 user의 email을 반환
@@ -92,6 +96,11 @@ class DonationView(APIView):
             }
             return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def calculate_donate_total(self, user):
+        donations = CopyOfDonation.objects.filter(user_id=user)
+        total = sum(donation.goods_total_price for donation in donations)
+        return total
     
 
 class ReviewView(APIView):
@@ -139,3 +148,12 @@ def review_create_view(request):
 def review_success_view(request):
     return render(request, 'review_success.html')
 
+
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request) :
+        user = request.user
+        serializers = UserProfileSerializer(user)
+        return Response(serializers.data, status=status.HTTP_200_OK)
