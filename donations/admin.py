@@ -8,6 +8,8 @@ class BasketItemDreamAdmin(admin.ModelAdmin):
     form = BasketItemDreamForm
     fields = ['basket_dream', 'basket_heart', 'goods_id', 'buy_num', 'total_price', 'complete']
 
+
+
     def save_model(self, request, obj, form, change):
         if not obj.basket_dream and not obj.basket_heart:
             raise ValidationError("Either 'basket_dream' or 'basket_heart' must be provided.")

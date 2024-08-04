@@ -1,44 +1,17 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.conf import settings
-CATEGORY = [
-    ("식료품", [
-        ("rice", "쌀"),
-        ("bread", "빵"),
-        ("egg", "계란"),
-        ("milk", "우유"),
-        ("fruit", "과일"),
-    ]),
-    ("청소용품", [
-        ("detergent", "세제"),
-        ("fabric_softener", "섬유유연제"),
-    ]),
-    ("주방용품", [
-        ("scrubbers", "수세미"),
-    ]),
-    ("위생용품", [
-        ("tissue", "휴지"),
-    ]),
-    ("사무용품", [
-        ("note", "노트"),
-    ]),
-    ("기타", [
-        ("paper_cup", "종이컵"),
-    ]),
-]
-class Goods(models.Model) :
 
-    goods_id = models.IntegerField(verbose_name="물품 아이디",null=False)
+class Goods(models.Model) :
+    goods_id = models.IntegerField(verbose_name="물품 아이디",null=True)
     goods_price = models.IntegerField(verbose_name="물품 가격",null=False)
     goods_name = models.CharField(verbose_name="물품 이름",max_length=40,null=False)
     goods_num = models.IntegerField(verbose_name="물품 재고",null=False)
-
-    goods_category = models.CharField(choices=CATEGORY, max_length=20)
     item_url=models.CharField(verbose_name="물품 주소",max_length=40,null=False)
-    item_img=models.ImageField(upload_to='images/', blank=False)
+    item_img=models.CharField(verbose_name="물품 이미지주소",max_length=40,null=False)
    
 class Basket_dream(models.Model):
-    basket_dream = models.IntegerField(verbose_name="꿈바구니 아이디",null=False)
+    basket_dream = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     dbuy_num = models.IntegerField(verbose_name= "구매갯수", default=0)
     dbuy_reason = models.CharField(max_length=300, verbose_name="구매 이유", null=False,default='')
@@ -48,7 +21,7 @@ class Basket_dream(models.Model):
     dbasket_complete = models.DateField(verbose_name="꿈바구니 완료 날짜",auto_now_add=False,null=True)
 
 class Basket_heart(models.Model):
-    basket_heart=models.IntegerField(verbose_name="따숨바구니 고유번호",null=False,default=0)
+    basket_heart=models.AutoField(primary_key=True)
     user_id=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     hbuy_num=models.IntegerField(verbose_name= "구매갯수", default=0)
     hbuy_reason=models.CharField(max_length=300, verbose_name="구매 이유", null=False,default='')
@@ -60,7 +33,9 @@ class Basket_heart(models.Model):
 class Basket_Item_dream(models.Model):
     basket_dream = models.ForeignKey(Basket_dream, on_delete=models.CASCADE,null=True) #null 허용해줘야 함
     basket_heart = models.ForeignKey(Basket_heart, on_delete=models.CASCADE,null=True)
-    goods_id = models.ForeignKey(Goods, on_delete=models.CASCADE,null=True)
+    goods_price = models.IntegerField(verbose_name="물품 가격",null=False)
+    goods_name = models.CharField(verbose_name="상품명", null = False, max_length=50)
+    item_url = models.CharField(verbose_name="상품 url", null = False, max_length = 300)
     buy_num = models.IntegerField(verbose_name="물품 수량",null=False,default=0)
     total_price = models.IntegerField(verbose_name="총 가격",default=0)
     complete=models.BooleanField(default = False)
@@ -74,6 +49,8 @@ class CopyOfDonation(models.Model):
     payment = models.CharField(verbose_name="결제방법", max_length=20)
     receipt_yn = models.BooleanField(default=True)
 
+    def __str__(self):
+        return str(self.id)
 
 class Donation_List(models.Model):
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -91,7 +68,8 @@ class Review(models.Model) :
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="회원 아이디", null=True, on_delete=models.CASCADE)
     donation_id = models.ForeignKey(CopyOfDonation, on_delete=models.CASCADE)
     review_cont = models.CharField(verbose_name="후기 내용", max_length=300)
-    review_img = models.ImageField(verbose_name="후기 이미지", default="media/defalut_image.img")
+    review_img = models.ImageField(verbose_name="후기 이미지", upload_to='reviews/')
+
 
 class Cheering(models.Model):
     cheering_id=models.AutoField(verbose_name="응원메세지 고유번호",null=False, primary_key=True)

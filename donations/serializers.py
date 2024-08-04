@@ -3,7 +3,6 @@ from .models import *
 from users.models import *
 import datetime
 
-
 User = get_user_model()
 
 class BasketItemDreamSerializer(serializers.ModelSerializer):
@@ -65,13 +64,13 @@ class CopyOfDonationSerializer(serializers.ModelSerializer):
             price = goods.goods_price * quantity
             
             Donation_Item.objects.create(donation_id=donation, goods_id=goods, basket_item_dream=basket_item, quantity=quantity)
-            goods.goods_num -= quantity
-            goods.save()
+            # goods.goods_num -= quantity
+            # goods.save()
             
-            basket_item.buy_num -= quantity
-            if basket_item.buy_num == 0:
-                basket_item.complete = True
-            basket_item.save()
+            # basket_item.buy_num -= quantity
+            # if basket_item.buy_num == 0:
+            #     basket_item.complete = True
+            # basket_item.save()
             
             goods_total_price += price
 
@@ -123,7 +122,6 @@ class UserDonationSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     user_nickname = serializers.CharField(source='user_id.nickname', read_only=True)
-    donation_id = serializers.IntegerField(write_only=True)
     created_at = serializers.SerializerMethodField()
 
     class Meta:
@@ -138,12 +136,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         donation_id = validated_data.pop('donation_id')
         donation = CopyOfDonation.objects.get(id=donation_id)
 
-        # 수혜자를 basket_dream 또는 basket_heart를 통해 확인
         if donation.basket_dream and donation.basket_dream.user_id != user:
             raise serializers.ValidationError("You can only review donations you have received.")
         if donation.basket_heart and donation.basket_heart.user_id != user:
             raise serializers.ValidationError("You can only review donations you have received.")
 
-        review = Review.objects.create(user_id=user, donation_id=donation, **validated_data)
+        review = Review.objects.create(user_id=user, donation_id=donation, **validated_data)  # CopyOfDonation 객체를 직접 할당합니다.
         return review
-
+    
