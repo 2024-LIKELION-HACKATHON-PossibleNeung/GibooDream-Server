@@ -7,5 +7,5 @@ urlpatterns = [
     path("basket/<int:basket_id>/", BasketDetail.as_view()),
     path("baskets/", BasketList.as_view()),
     path("basketStatus/", MyBasketStatus.as_view()),
-    path('crawl/', Crawl_items.as_view())
+    path('crawl/', Crawl_items_search.as_view())
 ]

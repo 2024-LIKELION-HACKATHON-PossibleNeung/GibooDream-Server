@@ -3,39 +3,7 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 
 class Goods(models.Model) :
-
-    CATEGORY = [
-        ('식료품', [
-            ('rice', '쌀'), 
-            ('bread', '빵'),
-        ]),
-        ('청소용품', [
-            ('detergent', '세제'),
-            ('fabric_softener', '섬유유연제'),
-        ]),
-        ('주방용품', [
-            ('scrubbers', '수세미'),
-        ]),
-        ('위생용품', [
-            ('tissue', '휴지'),
-        ]),
-        ('사무용품', [
-            ('note', '노트'),
-        ]),
-        ('기타', [
-            ('paper-cup', '종이컵'),
-        ]),
-    ]
-
-    def get_category_choices(category):
-        # Flatten the nested structure
-        choices = []
-        for category, subcategories in category:
-            choices.extend(subcategories)
-        return choices
- 
-
-    goods_id = models.IntegerField(verbose_name="물품 아이디",null=False)
+    goods_id = models.IntegerField(verbose_name="물품 아이디",null=True)
     goods_price = models.IntegerField(verbose_name="물품 가격",null=False)
     goods_name = models.CharField(verbose_name="물품 이름",max_length=40,null=False)
     goods_num = models.IntegerField(verbose_name="물품 재고",null=False)
@@ -65,6 +33,7 @@ class Basket_heart(models.Model):
 class Basket_Item_dream(models.Model):
     basket_dream = models.ForeignKey(Basket_dream, on_delete=models.CASCADE,null=True) #null 허용해줘야 함
     basket_heart = models.ForeignKey(Basket_heart, on_delete=models.CASCADE,null=True)
+    goods_price = models.IntegerField(verbose_name="물품 가격",null=False)
     goods_name = models.CharField(verbose_name="상품명", null = False, max_length=50)
     item_url = models.CharField(verbose_name="상품 url", null = False, max_length = 300)
     buy_num = models.IntegerField(verbose_name="물품 수량",null=False,default=0)
