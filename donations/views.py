@@ -4,10 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
 from .serializers import *
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser
 from .forms import ReviewForm
+from rest_framework import generics
+
 
 
 
@@ -157,3 +159,14 @@ class UserProfileView(APIView):
         user = request.user
         serializers = UserProfileSerializer(user)
         return Response(serializers.data, status=status.HTTP_200_OK)
+
+
+class ReviewListView(generics.ListAPIView):
+    serializer_class = ReviewListSerializer
+
+    def get_queryset(self):
+        queryset = Review.objects.all()
+        review_id = self.request.query_params.get('review_id', None)
+        if review_id is not None:
+            queryset = queryset.filter(review_id = review_id)
+        return queryset
