@@ -93,7 +93,3 @@ class BeneficiaryApplication(models.Model):
 
 
 
-{
-    'email' : "user1@hufs.ac.kr",
-    'password' : "1234"
-}
