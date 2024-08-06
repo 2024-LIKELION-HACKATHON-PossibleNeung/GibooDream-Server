@@ -9,4 +9,5 @@ urlpatterns = [
     path('reviews/', ReviewView.as_view(), name='review-create'),
     path('review/create/', review_create_view, name='review-create'),
     path('review/success/', review_success_view, name='review-success'),
+    path('reviewlist/', ReviewListView.as_view(), name='review-list'),
 ]
