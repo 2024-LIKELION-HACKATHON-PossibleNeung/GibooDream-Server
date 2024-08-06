@@ -116,29 +116,33 @@ class ReviewView(APIView):
             response_data = {
                 'review_id': review.review_id,
                 'user_nickname': review.user_id.nickname,
-                'donation_id': review.donation_id.id,
+                'donation_id': review.donation_id.id if review.donation_id else None,
                 'review_cont': review.review_cont,
                 'review_img': review.review_img.url if review.review_img else None,
                 'created_at': serializer.get_created_at(review),
             }
             return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 def review_create_view(request):
     if request.method == 'POST':
         form = ReviewForm(request.POST, request.FILES)
         if form.is_valid():
             review = form.save(commit=False)
             review.user_id = request.user  # 현재 로그인한 사용자 설정
-            donation = form.cleaned_data['donation_id']
+            donation = form.cleaned_data.get('donation_id')
             
+            if donation:
             # 수혜자를 basket_dream 또는 basket_heart를 통해 확인
-            if donation.basket_dream and donation.basket_dream.user_id != request.user:
-                form.add_error('donation_id', "You can only review donations you have received.")
-            elif donation.basket_heart and donation.basket_heart.user_id != request.user:
-                form.add_error('donation_id', "You can only review donations you have received.")
-            else:
-                review.donation_id = donation  # 여기를 수정합니다.
+                if donation.basket_dream and donation.basket_dream.user_id != request.user:
+                    form.add_error('donation_id', "You can only review donations you have received.")
+                elif donation.basket_heart and donation.basket_heart.user_id != request.user:
+                    form.add_error('donation_id', "You can only review donations you have received.")
+                else:
+                    review.donation_id = donation  # 여기를 수정합니다.
+                
+            if not form.errors:
                 review.save()
                 return redirect('review-success')  # 성공 후 리디렉션할 URL 설정
 
