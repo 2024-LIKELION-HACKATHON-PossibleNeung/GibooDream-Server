@@ -68,7 +68,7 @@ class Donation_Item(models.Model) :
 class Review(models.Model) :
     review_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="회원 아이디", null=True, on_delete=models.CASCADE)
-    donation_id = models.ForeignKey(CopyOfDonation, on_delete=models.CASCADE)
+    donation_id = models.ForeignKey(CopyOfDonation, on_delete=models.CASCADE, null = True)
     review_cont = models.CharField(verbose_name="후기 내용", max_length=300)
     review_img = models.ImageField(verbose_name="후기 이미지", upload_to='reviews/')
 
