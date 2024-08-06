@@ -13,8 +13,7 @@ class BasketItemDreamForm(forms.ModelForm):
         self.fields['basket_heart'].required = False
 
 class ReviewForm(forms.ModelForm):
-    donation_id = forms.ModelChoiceField(queryset=CopyOfDonation.objects.all(), label='Donation ID')
 
     class Meta:
         model = Review
-        fields = ['donation_id', 'review_cont', 'review_img']
+        fields = ['review_cont', 'review_img']

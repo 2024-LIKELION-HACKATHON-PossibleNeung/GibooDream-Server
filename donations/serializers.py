@@ -123,21 +123,29 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = ['review_id', 'user_nickname', 'donation_id', 'review_cont', 'review_img', 'created_at']
+        extra_kwargs = {
+            'donation_id': {'required': False}
+        }
 
     def get_created_at(self, obj):
         return datetime.datetime.now() if obj._state.adding else obj.created_at
 
     def create(self, validated_data):
         user = self.context['request'].user
-        donation_id = validated_data.pop('donation_id')
-        donation = CopyOfDonation.objects.get(id=donation_id)
+        donation_id = validated_data.pop('donation_id', None)
 
-        if donation.basket_dream and donation.basket_dream.user_id != user:
-            raise serializers.ValidationError("You can only review donations you have received.")
-        if donation.basket_heart and donation.basket_heart.user_id != user:
-            raise serializers.ValidationError("You can only review donations you have received.")
+        if donation_id:
+            donation = CopyOfDonation.objects.get(id=donation_id)
 
-        review = Review.objects.create(user_id=user, donation_id=donation, **validated_data)  # CopyOfDonation 객체를 직접 할당합니다.
+            if donation.basket_dream and donation.basket_dream.user_id != user:
+                raise serializers.ValidationError("You can only review donations you have received.")
+            if donation.basket_heart and donation.basket_heart.user_id != user:
+                raise serializers.ValidationError("You can only review donations you have received.")
+
+            review = Review.objects.create(user_id=user, donation_id=donation, **validated_data)
+        else:
+            review = Review.objects.create(user_id=user, **validated_data)
+        
         return review
     
     
@@ -156,4 +164,5 @@ class ReviewListSerializer(serializers.ModelSerializer) :
     class Meta :
         model = Review
         fields =['review_id','user_id' ,'user_nickname','donation_id', 'review_cont', 'review_img' ] 
+
 
