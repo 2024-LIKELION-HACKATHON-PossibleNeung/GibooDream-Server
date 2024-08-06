@@ -89,3 +89,11 @@ class BeneficiaryApplication(models.Model):
 
     def __str__(self):
         return self.full_name
+    
+
+
+
+{
+    'email' : "user1@hufs.ac.kr",
+    'password' : "1234"
+}

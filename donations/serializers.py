@@ -147,3 +147,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta : 
         model = MyUser
         fields = ['email', 'nickname', 'donate_total']
+
+
+
+class ReviewListSerializer(serializers.ModelSerializer) :
+    user_nickname = serializers.CharField(source='user_id.nickname', read_only=True)
+
+    class Meta :
+        model = Review
+        fields =['review_id','user_id' ,'user_nickname','donation_id', 'review_cont', 'review_img' ] 
+
